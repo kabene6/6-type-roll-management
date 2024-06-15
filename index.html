@@ -234,7 +234,35 @@
             playerList.innerHTML = "";
             playersToShow.forEach(player => {
                 const li = document.createElement("li");
-                li.textContent = player.name;
+                
+                // プレイヤー名を表示するspan要素
+                const playerNameSpan = document.createElement("span");
+                playerNameSpan.textContent = player.name;
+
+                // 編集可能なテキストフィールドを作成
+                const editInput = document.createElement("input");
+                editInput.type = "text";
+                editInput.value = player.name;
+                editInput.classList.add("edit-input");
+                editInput.style.display = "none"; // 初期状態では非表示
+
+                // 編集ボタンを作成
+                const editBtn = document.createElement("button");
+                editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                editBtn.classList.add("edit-btn");
+                editBtn.addEventListener("click", (event) => {
+                    event.stopPropagation(); // クリックイベントが親要素にバブルアップするのを防ぐ
+                    toggleEditMode(li);
+                });
+
+                // 保存ボタンを作成
+                const saveBtn = document.createElement("button");
+                saveBtn.innerHTML = '<i class="fas fa-save"></i>';
+                saveBtn.classList.add("save-btn");
+                saveBtn.style.display = "none"; // 初期状態では非表示
+                saveBtn.addEventListener("click", () => {
+                    savePlayerName(player.id, editInput.value.trim());
+                });
 
                 // 削除ボタンにFontAwesomeアイコンを追加
                 const deleteBtn = document.createElement("button");
@@ -245,14 +273,62 @@
                     deletePlayer(player.id);
                 });
 
+                // リストアイテムに要素を追加
+                li.appendChild(playerNameSpan);
+                li.appendChild(editInput);
+                li.appendChild(editBtn);
+                li.appendChild(saveBtn);
                 li.appendChild(deleteBtn);
+
                 li.setAttribute("data-player-id", player.id);
                 li.addEventListener("click", () => {
                     showPlayerRoles(player);
                 });
+
                 playerList.appendChild(li);
             });
         }
+
+        // プレイヤー名の編集モードを切り替える関数
+        function toggleEditMode(li) {
+            const playerNameSpan = li.querySelector("span");
+            const editInput = li.querySelector(".edit-input");
+            const editBtn = li.querySelector(".edit-btn");
+            const saveBtn = li.querySelector(".save-btn");
+
+            playerNameSpan.style.display = "none";
+            editInput.style.display = "inline-block";
+            editInput.focus();
+            editBtn.style.display = "none";
+            saveBtn.style.display = "inline-block";
+        }
+
+        // プレイヤー名を保存する関数
+        function savePlayerName(playerId, newName) {
+            const player = players.find(p => p.id === playerId);
+            if (player && newName && newName.trim() !== "") {
+                player.name = newName;
+                savePlayersToLocalStorage(); // ローカルストレージに保存
+                displayPlayers(); // リストを再描画して変更を反映
+            }
+        }
+
+        // プレイヤーデータをローカルストレージに保存する関数
+        function savePlayersToLocalStorage() {
+            localStorage.setItem("players", JSON.stringify(players));
+        }
+
+        // ローカルストレージからプレイヤーデータを読み込む関数
+        function loadPlayersFromLocalStorage() {
+            const storedPlayers = localStorage.getItem("players");
+            players = storedPlayers ? JSON.parse(storedPlayers) : []; // ローカルストレージが空の場合は空の配列を使用
+        }
+
+        
+
+        
+
+
 
         // プレイヤーを削除する関数
         function deletePlayer(playerId) {
@@ -611,6 +687,10 @@
         displayRoles();
         updatePlayerSelect();
         updateRoleSelect();
+
+        // 初期表示時にローカルストレージからデータを読み込む
+        loadPlayersFromLocalStorage();
+        displayPlayers();
     </script>
 
 
