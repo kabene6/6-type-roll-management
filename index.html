@@ -163,6 +163,7 @@
         <select id="roleFilterSelect" multiple></select>
         <div class="centered">
             <button id="searchPlayersBtn">検索</button>
+            <button id="resetRoleFilterBtn">選択ロールフィルターをリセット</button>
         </div>
         
         <h2>検索結果</h2>
@@ -212,6 +213,8 @@
         
         <div class="centered">
             <button id="assignRoleBtn">割り当て</button>
+            <button id="resetPlayersBtn">選択プレイヤーをリセット</button>
+            <button id="resetRolesBtn">選択ロールをリセット</button>
         </div>
         
         
@@ -383,19 +386,19 @@
             { id: 124, name: "打闇フルバ" }
         ];
 
-// 例：ページ読み込み時にロールを表示する関数
-function displayRoles() {
-    const roleSelect = document.getElementById("roleSelect");
-    roles.forEach(role => {
-        const option = document.createElement("option");
-        option.value = role.id;
-        option.text = role.name;
-        roleSelect.appendChild(option);
-    });
-}
+        // 例：ページ読み込み時にロールを表示する関数
+        function displayRoles() {
+            const roleSelect = document.getElementById("roleSelect");
+            roles.forEach(role => {
+                const option = document.createElement("option");
+                option.value = role.id;
+                option.text = role.name;
+                roleSelect.appendChild(option);
+            });
+        }
 
-// ページ読み込み時に実行
-document.addEventListener("DOMContentLoaded", displayRoles);
+        // ページ読み込み時に実行
+        document.addEventListener("DOMContentLoaded", displayRoles);
 
 
 
@@ -561,34 +564,125 @@ document.addEventListener("DOMContentLoaded", displayRoles);
             createRoleForm.reset();
         });
 
-        // ロールをプレイヤーに割り当てるボタンのイベントリスナー
-        const assignRoleBtn = document.getElementById("assignRoleBtn");
-        assignRoleBtn.addEventListener("click", function() {
-            const selectedPlayerIds = Array.from(document.getElementById("playerSelect").selectedOptions).map(option => parseInt(option.value));
-            const selectedRoleIds = Array.from(document.getElementById("roleSelect").selectedOptions).map(option => parseInt(option.value));
+        // ページ読み込み時に実行
+            document.addEventListener("DOMContentLoaded", () => {
+                displayData();
 
-            selectedPlayerIds.forEach(playerId => {
-                const player = players.find(p => p.id === playerId);
-                if (player) {
-                    selectedRoleIds.forEach(roleId => {
-                        if (!player.roles.includes(roleId)) {
-                            player.roles.push(roleId);
+                // ロールフィルターの選択をリセットするボタンのイベントリスナー
+                const resetRoleFilterBtn = document.getElementById("resetRoleFilterBtn");
+                resetRoleFilterBtn.addEventListener("click", () => {
+                    const roleFilterSelect = document.getElementById("roleFilterSelect");
+                    resetSelect(roleFilterSelect);
+                });
+
+                // プレイヤーの選択をリセットするボタンのイベントリスナー
+                const resetPlayersBtn = document.getElementById("resetPlayersBtn");
+                resetPlayersBtn.addEventListener("click", () => {
+                    const playerSelect = document.getElementById("playerSelect");
+                    resetSelect(playerSelect);
+                });
+
+                // ロールの選択をリセットするボタンのイベントリスナー
+                const resetRolesBtn = document.getElementById("resetRolesBtn");
+                resetRolesBtn.addEventListener("click", () => {
+                    const roleSelect = document.getElementById("roleSelect");
+                    resetSelect(roleSelect);
+                });
+
+                // ロールでプレイヤーを検索するボタンのイベントリスナー
+                const searchPlayersBtn = document.getElementById("searchPlayersBtn");
+                searchPlayersBtn.addEventListener("click", () => {
+                    const selectedRoleIds = Array.from(document.getElementById("roleFilterSelect").selectedOptions).map(option => parseInt(option.value));
+                    
+                    // プレイヤー一覧を初期化
+                    const playerSelect = document.getElementById("playerSelect");
+                    playerSelect.innerHTML = "";
+                    
+                    // 選択されたロールに該当するプレイヤーを表示
+                    players.forEach(player => {
+                        if (selectedRoleIds.every(roleId => player.roles.includes(roleId))) {
+                            const option = document.createElement("option");
+                            option.value = player.id;
+                            option.textContent = player.name;
+                            playerSelect.appendChild(option);
                         }
                     });
-                }
+                });
+
+                // ロールをプレイヤーに割り当てるボタンのイベントリスナー
+                const assignRoleBtn = document.getElementById("assignRoleBtn");
+                assignRoleBtn.addEventListener("click", () => {
+                    const selectedPlayerIds = Array.from(document.getElementById("playerSelect").selectedOptions).map(option => parseInt(option.value));
+                    const selectedRoleIds = Array.from(document.getElementById("roleSelect").selectedOptions).map(option => parseInt(option.value));
+
+                    selectedPlayerIds.forEach(playerId => {
+                        const player = players.find(p => p.id === playerId);
+                        if (player) {
+                            selectedRoleIds.forEach(roleId => {
+                                if (!player.roles.includes(roleId)) {
+                                    player.roles.push(roleId);
+                                }
+                            });
+                            showPlayerRoles(player);
+                        }
+                    });
+
+                    // ローカルストレージにデータ保存
+                    localStorage.setItem('playersData', JSON.stringify(players));
+                });
             });
 
-            // プレイヤーリストを更新
-            selectedPlayerIds.forEach(playerId => {
-                const player = players.find(p => p.id === playerId);
-                if (player) {
-                    showPlayerRoles(player);
-                }
-            });
+            // ページ読み込み時にプレイヤーとロールを表示する関数
+            function displayData() {
+                const playerSelect = document.getElementById("playerSelect");
+                playerSelect.innerHTML = "";
+                players.forEach(player => {
+                    const option = document.createElement("option");
+                    option.value = player.id;
+                    option.textContent = player.name;
+                    playerSelect.appendChild(option);
+                });
 
-            // ローカルストレージにデータ保存
-            localStorage.setItem('playersData', JSON.stringify(players));
-        });
+                const roleSelect = document.getElementById("roleSelect");
+                roleSelect.innerHTML = "";
+                roles.forEach(role => {
+                    const option = document.createElement("option");
+                    option.value = role.id;
+                    option.textContent = role.name;
+                    roleSelect.appendChild(option);
+                });
+
+                const roleFilterSelect = document.getElementById("roleFilterSelect");
+                roleFilterSelect.innerHTML = "";
+                roles.forEach(role => {
+                    const option = document.createElement("option");
+                    option.value = role.id;
+                    option.textContent = role.name;
+                    roleFilterSelect.appendChild(option);
+                });
+            }
+
+            // プレイヤーのロールを表示する関数
+            function showPlayerRoles(player) {
+                const playerList = document.getElementById("playerSelect");
+                Array.from(playerList.children).forEach(option => {
+                    if (parseInt(option.value) === player.id) {
+                        const roleList = player.roles.map(roleId => {
+                            const role = roles.find(r => r.id === roleId);
+                            return role ? role.name : "不明なロール";
+                        }).join(", ");
+                        option.textContent = `${player.name} - ${roleList}`;
+                    }
+                });
+            }
+
+            // プレイヤーやロールの選択をリセットする関数
+            function resetSelect(selectElement) {
+                Array.from(selectElement.options).forEach(option => {
+                    option.selected = false;
+                });
+            }
+
 
 
         // 選択されたプレイヤーのロールを表示する関数
@@ -786,7 +880,9 @@ document.addEventListener("DOMContentLoaded", displayRoles);
         }
 
         
+        
 
+            
         // 初期表示の実行
         initializePage();
 
