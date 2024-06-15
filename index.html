@@ -203,8 +203,13 @@
         </div>
 
         <h2>ロール割り当て</h2>
-        <select id="playerSelect"></select>
-        <select id="roleSelect"></select>
+        <select id="playerSelect" multiple>
+            <!-- プレイヤーの名前はここに動的に追加されます -->
+        </select>
+        <select id="roleSelect" multiple>
+            <!-- ロールの名前はここに動的に追加されます -->
+        </select>
+        
         <div class="centered">
             <button id="assignRoleBtn">割り当て</button>
         </div>
@@ -250,38 +255,148 @@
             { id: 30, name: "rose", roles: [] }
         ];
 
+        // 初期データのサンプル
         let roles = [
             { id: 1, name: "参加" },
             { id: 2, name: "不参加" },
-            { id: 3, name: "斬火MOD" },
-            { id: 4, name: "リーダー" },
-            { id: 5, name: "サブリーダー" },
-            { id: 6, name: "メンバー" },
-            { id: 7, name: "新規" },
-            { id: 8, name: "ベテラン" },
-            { id: 9, name: "ゲスト" },
-            { id: 10, name: "管理者" },
-            { id: 11, name: "モデレータ" },
-            { id: 12, name: "サポーター" },
-            { id: 13, name: "開発者" },
-            { id: 14, name: "テスター" },
-            { id: 15, name: "デザイナー" },
-            { id: 16, name: "プロデューサー" },
-            { id: 17, name: "ディレクター" },
-            { id: 18, name: "プランナー" },
-            { id: 19, name: "プログラマー" },
-            { id: 20, name: "アーティスト" },
-            { id: 21, name: "ライター" },
-            { id: 22, name: "マーケティング" },
-            { id: 23, name: "サポート" },
-            { id: 24, name: "コミュニティマネージャー" },
-            { id: 25, name: "イベントコーディネーター" },
-            { id: 26, name: "ストリーマー" },
-            { id: 27, name: "YouTuber" },
-            { id: 28, name: "インフルエンサー" },
-            { id: 29, name: "広報" },
-            { id: 30, name: "ファン" }
+            { id: 3, name: "pt筋力増強4棍" },
+            { id: 4, name: "pt精密攻撃3" },
+            { id: 5, name: "pt弱点攻撃4" },
+            { id: 6, name: "pt刺突強化4" },
+            { id: 7, name: "PT攻撃強化4片手棍" },
+            { id: 8, name: "pt防御強化4片手棍" },
+            { id: 9, name: "徐如林・バフ片手棍" },
+            { id: 10, name: "ヒーリング3盾" },
+            { id: 11, name: "ヒーリング3片手棍" },
+            { id: 12, name: "ヒーリング4片手棍" },
+            { id: 13, name: "PT打撃強化4片手棍" },
+            { id: 14, name: "フレイムフォース5片手棍" },
+            { id: 15, name: "アースフォース5片手棍" },
+            { id: 16, name: "ホーリーフォース5片手棍" },
+            { id: 17, name: "ウィンドフォース5片手棍" },
+            { id: 18, name: "コマンド・ナイト【ディアベル】(アビリティ)" },
+            { id: 19, name: "静かに聞いてね【ユナ】(アビリティ)" },
+            { id: 20, name: "コンビネーションバフ3(PT)片手棍" },
+            { id: 21, name: "アクアパイル(PT)片手棍" },
+            { id: 22, name: "烙印棍" },
+            { id: 23, name: "烙印槍" },
+            { id: 24, name: "防御弱化5直剣" },
+            { id: 25, name: "防御弱化5細剣" },
+            { id: 26, name: "防御弱化5短剣" },
+            { id: 27, name: "防御弱化5完凸" },
+            { id: 28, name: "筋力減退4アクセル短剣" },
+            { id: 29, name: "装甲減退4アクセル槍" },
+            { id: 30, name: "状態異常4種短剣" },
+            { id: 31, name: "防御弱化4片手直剣" },
+            { id: 32, name: "防御弱化4片手細剣" },
+            { id: 33, name: "防御弱化4両手槍" },
+            { id: 34, name: "防御弱化4短剣" },
+            { id: 35, name: "火属性弱化3両手槍" },
+            { id: 36, name: "火属性弱化4両手槍" },
+            { id: 37, name: "火属性弱化4弓" },
+            { id: 38, name: "火属性弱化5片手直剣" },
+            { id: 39, name: "水属性弱化3片手細剣" },
+            { id: 40, name: "水属性弱化4片手細剣" },
+            { id: 41, name: "水属性弱化4両手槍" },
+            { id: 42, name: "水属性弱化4弓" },
+            { id: 43, name: "風属性弱化3両手槍" },
+            { id: 44, name: "風属性弱化4両手槍" },
+            { id: 45, name: "風属性弱化4片手直剣" },
+            { id: 46, name: "闇属性弱化3片手細剣" },
+            { id: 47, name: "闇属性弱化3片手直剣" },
+            { id: 48, name: "闇属性弱化4両手槍" },
+            { id: 49, name: "闇属性弱化4片手直剣" },
+            { id: 50, name: "斬撃弱化4両手槍" },
+            { id: 51, name: "斬撃弱化4短剣" },
+            { id: 52, name: "刺突弱化3弓" },
+            { id: 53, name: "刺突弱化3両手槍" },
+            { id: 54, name: "刺突弱化3片手細剣" },
+            { id: 55, name: "刺突弱化4片手細剣" },
+            { id: 56, name: "打撃弱化4片手棍" },
+            { id: 57, name: "打撃弱化4両手斧" },
+            { id: 58, name: "打撃弱化4盾" },
+            { id: 59, name: "アナライズ4両手槍" },
+            { id: 60, name: "アナライズ4両手斧" },
+            { id: 61, name: "死兆印短剣" },
+            { id: 62, name: "死兆印アビリティ(輔星)" },
+            { id: 63, name: "土属性弱化3片手直剣" },
+            { id: 64, name: "土属性弱化3弓" },
+            { id: 65, name: "土属性弱化4両手斧" },
+            { id: 66, name: "聖属性弱化3片手直剣" },
+            { id: 67, name: "聖属性弱化3両手槍" },
+            { id: 68, name: "聖属性弱化4両手槍" },
+            { id: 69, name: "聖属性弱化4片手細剣" },
+            { id: 70, name: "火傷ブースト4片手直剣" },
+            { id: 71, name: "毒ブースト4短剣" },
+            { id: 72, name: "出血ブースト4両手槍" },
+            { id: 73, name: "出血ブースト4片手棍" },
+            { id: 74, name: "出血ブースト4短剣" },
+            { id: 75, name: "凍傷ブースト4片手棍" },
+            { id: 76, name: "凍傷ブースト4片手細剣" },
+            { id: 77, name: "斬攻撃弱化4片手棍" },
+            { id: 78, name: "斬攻撃弱化4片手細剣" },
+            { id: 79, name: "突攻撃弱化4片手棍" },
+            { id: 80, name: "打攻撃弱化3片手直剣" },
+            { id: 81, name: "打攻撃弱化3短剣" },
+            { id: 82, name: "打攻撃弱化4片手棍" },
+            { id: 83, name: "火属性弱化4片手直剣" },
+            { id: 84, name: "突衰印アクセル片手棍" },
+            { id: 85, name: "斬マザロザMOD" },
+            { id: 86, name: "斬マザロザフルバ" },
+            { id: 87, name: "斬火MOD" },
+            { id: 88, name: "斬火フルバ" },
+            { id: 89, name: "斬水MOD" },
+            { id: 90, name: "斬水フルバ" },
+            { id: 91, name: "斬風MOD" },
+            { id: 92, name: "斬風フルバ" },
+            { id: 93, name: "斬土MOD" },
+            { id: 94, name: "斬土フルバ" },
+            { id: 95, name: "斬聖MOD" },
+            { id: 96, name: "斬聖フルバ" },
+            { id: 97, name: "斬闇MOD" },
+            { id: 98, name: "斬闇フルバ" },
+            { id: 99, name: "突マザロザMOD" },
+            { id: 100, name: "突マザロザフルバ" },
+            { id: 101, name: "突火MOD" },
+            { id: 102, name: "突火フルバ" },
+            { id: 103, name: "突水MOD" },
+            { id: 104, name: "突水フルバ" },
+            { id: 105, name: "突風MOD" },
+            { id: 106, name: "突風フルバ" },
+            { id: 107, name: "突土MOD" },
+            { id: 108, name: "突土フルバ" },
+            { id: 109, name: "突聖MOD" },
+            { id: 110, name: "突聖フルバ" },
+            { id: 111, name: "突闇MOD" },
+            { id: 112, name: "突闇フルバ" },
+            { id: 113, name: "打火MOD" },
+            { id: 114, name: "打火フルバ" },
+            { id: 115, name: "打水MOD" },
+            { id: 116, name: "打水フルバ" },
+            { id: 117, name: "打風MOD" },
+            { id: 118, name: "打風フルバ" },
+            { id: 119, name: "打土MOD" },
+            { id: 120, name: "打土フルバ" },
+            { id: 121, name: "打聖MOD" },
+            { id: 122, name: "打聖フルバ" },
+            { id: 123, name: "打闇MOD" },
+            { id: 124, name: "打闇フルバ" }
         ];
+
+// 例：ページ読み込み時にロールを表示する関数
+function displayRoles() {
+    const roleSelect = document.getElementById("roleSelect");
+    roles.forEach(role => {
+        const option = document.createElement("option");
+        option.value = role.id;
+        option.text = role.name;
+        roleSelect.appendChild(option);
+    });
+}
+
+// ページ読み込み時に実行
+document.addEventListener("DOMContentLoaded", displayRoles);
+
 
 
         // プレイヤーを表示する関数
@@ -449,18 +564,32 @@
         // ロールをプレイヤーに割り当てるボタンのイベントリスナー
         const assignRoleBtn = document.getElementById("assignRoleBtn");
         assignRoleBtn.addEventListener("click", function() {
-            const playerId = document.getElementById("playerSelect").value;
-            const roleId = document.getElementById("roleSelect").value;
+            const selectedPlayerIds = Array.from(document.getElementById("playerSelect").selectedOptions).map(option => parseInt(option.value));
+            const selectedRoleIds = Array.from(document.getElementById("roleSelect").selectedOptions).map(option => parseInt(option.value));
 
-            const player = players.find(p => p.id === parseInt(playerId));
-            if (player && !player.roles.includes(parseInt(roleId))) {
-                player.roles.push(parseInt(roleId));
-                showPlayerRoles(player);
+            selectedPlayerIds.forEach(playerId => {
+                const player = players.find(p => p.id === playerId);
+                if (player) {
+                    selectedRoleIds.forEach(roleId => {
+                        if (!player.roles.includes(roleId)) {
+                            player.roles.push(roleId);
+                        }
+                    });
+                }
+            });
 
-                // ローカルストレージにデータ保存
-                localStorage.setItem('playersData', JSON.stringify(players));
-            }
+            // プレイヤーリストを更新
+            selectedPlayerIds.forEach(playerId => {
+                const player = players.find(p => p.id === playerId);
+                if (player) {
+                    showPlayerRoles(player);
+                }
+            });
+
+            // ローカルストレージにデータ保存
+            localStorage.setItem('playersData', JSON.stringify(players));
         });
+
 
         // 選択されたプレイヤーのロールを表示する関数
         function showPlayerRoles(player) {
